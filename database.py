@@ -171,6 +171,7 @@ def register():
         res['email']=email
     elif request.method =='GET':
         res['UID']=reg_res['id']
+        res['Result']=reg_res['result']
         res['ResponseCode']=Response.status
     return json.dumps(res)
 
