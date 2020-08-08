@@ -6,8 +6,8 @@ class Comment(db.Model):
         "mysql_charset":"utf8"
     }
 
-    uid = db.Column(db.Integer,db.ForeignKey('User.id'))
-    tid = db.Column(db.Integer,db.ForeignKey('Task.id'))
+    uid = db.Column(db.Integer,db.ForeignKey('User.id'),primary_key=True)
+    tid = db.Column(db.Integer,db.ForeignKey('Task.id'),primary_key=True)
     comment = db.String(db.String(300))
 
     def __init__(self,uid,tid,comment):

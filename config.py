@@ -15,7 +15,7 @@ class DevelopmentConfig(Config):
     # 开发环境配置
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URI') or \
-                              'mysql+pymysql://root:@#$%Yzndmm0902@localhost/xuanshang'
+                              'mysql+pymysql://root:yzn1370628636@localhost/xuanshang'
 
 class TestingConfig(Config):
     pass
