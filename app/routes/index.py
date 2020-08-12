@@ -4,8 +4,11 @@ import os
 
 from ..base import base
 from .. import db
-from ..models import User,Task,Comment
+from ..models.User import User
+from ..models.Task import Task
+from ..models.Comment import Comment
 
+from flask import request
 from sqlalchemy import or_
 from sqlalchemy.sql.expression import func
 
@@ -16,6 +19,11 @@ row2dict = lambda r: {c.name: str(getattr(r, c.name)) for c in r.__table__.colum
 def home():
     res={}
     data = request.get_data()
+    
+    if request.content_length == 0:
+        res['result']="Do not have data"
+        return json.dumps(res)
+    
     json_re = json.loads(data)
     uid = json_re['uid']
     user = db.session.query(User).filter_by(id=uid).first()
@@ -38,20 +46,27 @@ def home():
 
 def register():
     data = request.get_data()
+    
+    if request.content_length == 0:
+        res['result']="Do not have data"
+        return json.dumps(res)
+
     json_re = json.loads(data)
     username = json_re['username']
     email = json_re['email']
     password = json_re['pwd']
-    user = User(username, email, '保密',password)
-    reg_res=user.register()
+    res={}
     if request.method == 'POST':
-        res['Username']=username
-        res['Password']=password
-        res['email']=email
+        user = User(username, email, '保密',password)
+        if User.query.filter_by(username = username).count() != 0:
+            res['result'] = 112
+        elif User.query.filter_by(email = email).count() != 0:
+            res['result'] = 113
+        else:           
+            user.add()
+            res['result'] = 111
     elif request.method =='GET':
-        res['UID']=reg_res['id']
-        res['Result']=reg_res['result']
-        res['ResponseCode']=Response.status
+        pass
     return json.dumps(res)
 
 
@@ -60,25 +75,30 @@ def register():
 def login():
     res={}
     data = request.get_data()
+
+    if request.content_length == 0:
+        res['result']="Do not have data"
+        return json.dumps(res)
+
     json_re = json.loads(data)
     username = json_re['username']
     password = json_re['pwd']
     user = db.session.query(User).filter_by(username=username).first()
-    temp = user.to_dict()
+    
     
     if request.method=='POST':
-        res['Username']=temp['username']
-        res['Password']=temp['password'] 
-        
-    elif request.method=='GET':
         if user != None:
+            temp = user.to_dict()
             res['UID']=temp['id']
             if temp['password']==password:
-                res['ResponseCode']=111
+                res['Result']=111 # 登录成功
             else:
-                res['ResponseCode']=113
+                res['Result']=113 # 密码错误
         else:
-            res['ResponseCode']=112
+            res['Result']=112   # 用户名不存在
+        
+    elif request.method=='GET':
+        pass
 
     return json.dumps(res)
 
@@ -109,10 +129,6 @@ def task():
     temp = task.to_dict()
 
     if request.method=='POST':
-        res['TID'] = temp['TID']
-        res['UID'] = uid 
-        
-    elif request.method=='GET':
         if task != None:
             res['TaskName']=temp['task_name']
             res['TaskTargetNumber']=temp['acceptable_number']
@@ -128,6 +144,10 @@ def task():
                 temp['UID']=r.to_dict()['uid']
                 temp['Comment']=r.to_dict()['comment']
                 res['TaskComments'].append(temp)
+        
+    elif request.method=='GET':
+        pass
+
     return json.dumps(res)
 
 @base.route('/my_tasks',methods=['POST','GET'])

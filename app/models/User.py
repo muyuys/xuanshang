@@ -1,5 +1,7 @@
 from app import db
 from datetime import datetime
+import json
+from .User_Task import User_Task
 
 user_task = db.Table(
     'user_task',  # 中间表
@@ -26,7 +28,7 @@ class User(db.Model):
     tasknum = db.Column(db.Integer, default=0)  # 已接受任务数
     create_at = db.Column(db.DateTime, default=datetime.now())
 
-    tasks = db.relationship('Task', backref=db.backref('User',lazy='dynamic'), secondary=user_task)
+    tasks = db.relationship('Task', backref=db.backref('User',lazy='dynamic'), secondary=User_Task)
 
     def __init__(self, username, email, gender, password):
         self.username = username
