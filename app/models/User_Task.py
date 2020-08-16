@@ -1,5 +1,6 @@
 from app import db
 import json
+from datetime import datetime
 
 
 class User_Task(db.Model):
@@ -7,7 +8,8 @@ class User_Task(db.Model):
     
     __tablename__ = 'user_task'  # 中间表
     __table_args__ = {
-        "mysql_charset": "utf8"
+        "mysql_charset": "utf8",
+        'extend_existing': True
     }
 
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), primary_key=True)

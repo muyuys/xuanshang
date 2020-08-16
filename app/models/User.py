@@ -3,11 +3,7 @@ from datetime import datetime
 import json
 from .User_Task import User_Task
 
-user_task = db.Table(
-    'user_task',  # 中间表
-    db.Column('user_id', db.Integer, db.ForeignKey('User.id'), primary_key=True),
-    db.Column('task_id', db.Integer, db.ForeignKey('Task.id'), primary_key=True)
-)
+
 
 
 class User(db.Model):
